@@ -6,16 +6,16 @@ Requires `HKMirror` to work.
 # Options
 
  **Reduce nail damage**
- - Option to limit your nail damage at various nail upgrade levels, includes a Nail -1 setting to lower your nail damage to 1, useful for enemy pogo skips.
+  - Option to limit your nail damage at various nail upgrade levels, includes a Nail -1 setting to lower your nail damage to 1, useful for enemy pogo skips.
 
-**Extra damage**
- - Option to make you take extra damage everywhere. 
- - Skong mode is an extra mask on every enemy hit(1 mask hits => 2 mask hits and 2 mask hits => 3 mask hits), hazards are still 1 mask of damage.
- - Double is every instance of damage is doubled including hazards(1 mask hits => 2 mask hits and 2 mask hits => 4 mask hits).
+ **Extra damage**
+  - Option to make you take extra damage everywhere. 
+  - Skong mode is an extra mask on every enemy hit(1 mask hits => 2 mask hits and 2 mask hits => 3 mask hits), hazards are still 1 mask of damage.
+  - Double is every instance of damage is doubled including hazards(1 mask hits => 2 mask hits and 2 mask hits => 4 mask hits).
 
 
-**Hard Mode**
-- Hard mode replaces the Radiance fight after THK with Absolute Radiance, making it a harder fight to "goal" your game in APs, will give the Dream No More ending upon winning to prevent getting the achievement for beating P5 easily.
+ **Hard Mode**
+  - Hard mode replaces the Radiance fight after THK with Absolute Radiance, making it a harder fight to "goal" your game in APs, will give the Dream No More ending upon winning to prevent getting the achievement for beating P5 easily.
 
 
 
