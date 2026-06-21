@@ -28,7 +28,7 @@ namespace HarderAPSettings
 
         public HarderAPSettings() : base("HarderAPSettings") { }
 
-        public override string GetVersion() => "1.0.0.1";
+        public override string GetVersion() => "1.0.0.2";
 
         public override void Initialize()
         {
@@ -117,7 +117,7 @@ namespace HarderAPSettings
 
         public void SceneChanged(Scene oldScene, Scene newScene)
         {
-             if (newScene.name == "Menu_Title" || newScene.name == "Quit_To_Title")
+             if (newScene.name == "Menu_Title" || newScene.name == "Quit_To_Menu")
             {
                 return;
             }
@@ -194,8 +194,10 @@ namespace HarderAPSettings
             Log($" ,,, Begining Scene transistion ,, info.SceneName , {info.SceneName} ,,,, gate , {info.EntryGateName},,,,,,");
             if (Settings.HardMode == true)
             {
-                if (info.SceneName == "Room_Final_Boss_Core" && PlayerData.instance.currentBossSequence == null)
+                if (info.SceneName == "Room_Final_Boss_Core")
                 {
+                    Log("Restart boss sequence");
+                    BossSequenceController.Reset();
                     SetupNewSequence(0);
                 }
                 if (info.SceneName == "Dream_Final_Boss")
