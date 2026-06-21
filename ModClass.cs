@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using System.Dynamic;
 using HutongGames.PlayMaker.Actions;
 using JetBrains.Annotations;
@@ -10,6 +12,8 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using HKMirror;
+using HKMirror.Reflection.StaticClasses;
+using Unity.IO.LowLevel.Unsafe;
 
 
 namespace HarderAPSettings
@@ -19,6 +23,7 @@ namespace HarderAPSettings
     {
         public static LocalSettings Settings { get; set; } = new LocalSettings();
 
+        public override int LoadPriority() => 100;
         public bool ToggleButtonInsideMenu => false;
 
         public HarderAPSettings() : base("HarderAPSettings") { }
@@ -44,7 +49,6 @@ namespace HarderAPSettings
        
         public int pdMana;
         public int pdManaReserve;
-        
         public static BossSequenceController.BossSequenceData currentData;
 
         private static BossSequence currentSequence;
@@ -91,15 +95,12 @@ namespace HarderAPSettings
 
 
 
-
-
-
-
-
         //AbsRad Ending Change
         public string BeforeSceneLoad(string sceneName)
         {
             Log("beforeSceneloaded");
+            pdMana = PlayerDataAccess.MPCharge;
+            pdManaReserve = PlayerDataAccess.MPReserve;
             Log($" Current scene: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
             if (sceneName == "Cinematic_Ending_D" && Settings.HardMode == true)
             {
@@ -111,8 +112,6 @@ namespace HarderAPSettings
                 sceneName = "GG_Radiance";
                 return sceneName;
             }
-            pdMana = PlayerDataAccess.MPCharge;
-            pdManaReserve = PlayerDataAccess.MPReserve;
             return sceneName;
         }
 
@@ -127,19 +126,22 @@ namespace HarderAPSettings
                 Log("playerdata was null");
                 return;
             }
-
-
             Log("afterSceneloaded");
             Log($"old {oldScene.name}, new {newScene.name}");
             Log($" Current scene: {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
             if(GameManager.instance.sceneName == "GG_Radiance" && Settings.HardMode == true)
             {  
                 Log("giving back mana");
-                HeroController.instance.AddMPCharge(pdMana);
-                HeroController.instance.AddMPCharge(pdManaReserve);
-                //BossSequenceControllerR.LoadCurrentSequence(caller);
-                PlayMakerFSM.BroadcastEvent("MP SET");
-                PlayMakerFSM.BroadcastEvent("UPDATE BLUE HEALTH");
+                if ((PlayerDataAccess.MPCharge + PlayerDataAccess.MPReserve) != (pdMana + pdManaReserve))
+                {   
+                    Log("giving back mana,inside");
+                    HeroController.instance.AddMPCharge(pdMana);
+                    HeroController.instance.AddMPCharge(pdManaReserve);
+                }
+                //PlayMakerFSM.BroadcastEvent("MP SET");
+                Log("Finished giving mana, before caller");
+                BossSequenceControllerR.LoadCurrentSequence(caller);
+                Log("Finished giving mana, after caller");
             }
         }
         public MonoBehaviour caller;
@@ -177,6 +179,7 @@ namespace HarderAPSettings
             if (damage >= (PlayerData.instance.GetInt("health") + PlayerData.instance.GetInt("healthBlue")) && GameManager.instance.sceneName == "GG_Radiance" && Settings.HardMode == true) 
             {
                 GameManager.instance.sm.mapZone = GlobalEnums.MapZone.FINAL_BOSS;
+                BossSequenceController.Reset();
                 return damage;
             }
             return damage;
