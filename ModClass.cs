@@ -14,6 +14,7 @@ using UnityEngine.SceneManagement;
 using HKMirror;
 using HKMirror.Reflection.StaticClasses;
 using Unity.IO.LowLevel.Unsafe;
+using HutongGames.PlayMaker;
 
 
 namespace HarderAPSettings
@@ -28,7 +29,7 @@ namespace HarderAPSettings
 
         public HarderAPSettings() : base("HarderAPSettings") { }
 
-        public override string GetVersion() => "1.0.0.2";
+        public override string GetVersion() => "1.1.0.1";
 
         public override void Initialize()
         {
@@ -112,6 +113,11 @@ namespace HarderAPSettings
                 sceneName = "GG_Radiance";
                 return sceneName;
             }
+            if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "GG_Radiance" && Settings.HardMode)
+            {
+                GameManager.instance.sm.mapZone = GlobalEnums.MapZone.FINAL_BOSS;
+                BossSequenceController.Reset();
+            }
             return sceneName;
         }
 
@@ -140,6 +146,7 @@ namespace HarderAPSettings
                 }
                 //PlayMakerFSM.BroadcastEvent("MP SET");
                 Log("Finished giving mana, before caller");
+                //THIS BREAKS EVERYTHING AFTER ON SCENE CHANGE, BUT IT MUST BE HERE FOR MOD TO WORK, MOD MUST LOAD LAST
                 BossSequenceControllerR.LoadCurrentSequence(caller);
                 Log("Finished giving mana, after caller");
             }
@@ -176,10 +183,9 @@ namespace HarderAPSettings
                     damage = damageAmount*2;
                     break;
             }
-            if (damage >= (PlayerData.instance.GetInt("health") + PlayerData.instance.GetInt("healthBlue")) && GameManager.instance.sceneName == "GG_Radiance" && Settings.HardMode == true) 
+            if (GameManager.instance.sceneName == "GG_Radiance" && Settings.HardMode == true) 
             {
                 GameManager.instance.sm.mapZone = GlobalEnums.MapZone.FINAL_BOSS;
-                BossSequenceController.Reset();
                 return damage;
             }
             return damage;
@@ -212,6 +218,13 @@ namespace HarderAPSettings
                     PlayerData.instance.currentBossSequence.playerData = "bossDoorStateTier5";
                     PlayerData.instance.currentBossSequence.bossSequenceName = "Boss Sequence Tier 5";
                     Log($",,,,,{info.SceneName} ,,,,, gate ,,, {info.EntryGateName},,,,,after,,,,");
+                }
+                if (info.SceneName == "none" && info.EntryGateName == "door_dreamReturn")
+                {
+                    Log("brokey respawn point, fixing");
+                    info.SceneName = "Room_Final_Boss_Atrium";
+                    info.EntryGateName = "";
+                    GameManager.instance.sm.mapZone = GlobalEnums.MapZone.FINAL_BOSS;
                 }
             }
             orig(self, info);
